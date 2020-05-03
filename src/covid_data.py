@@ -64,14 +64,43 @@ def get_countries_info():
 
 def get_top_countries_totalconfirmed(country_count=5):
     df = get_countries_info()
-    #TODO: Looks like desc is not working. Check later
     new_df = df.sort(col("TotalConfirmed").desc()).limit(country_count)
     return new_df.select("Country", "TotalConfirmed")
 
 def get_top_countries_totalrecovered(country_count=5):
     df = get_countries_info()
-    new_df = df.sort(col("TotalConfirmed").desc()).limit(country_count)
+    new_df = df.sort(col("TotalRecovered").desc()).limit(country_count)
     return new_df.select("Country", "TotalRecovered")
+
+def get_top_countries_recover_rate(country_count=5):
+    df = get_countries_info()
+    new_df = df.withColumn("RecoverRate", df.TotalRecovered / df.TotalConfirmed)
+    ratio_df = new_df.select("Country", "RecoverRate", "TotalRecovered",
+                             "TotalConfirmed")
+    return ratio_df.sort(col("RecoverRate").desc()).limit(country_count)  
+
+def get_top_countries_deaths_rate(country_count=5):
+    df = get_countries_info()
+    new_df = df.withColumn("DeathsRate", df.TotalDeaths / df.TotalConfirmed)
+    ratio_df = new_df.select("Country", "DeathsRate", "TotalDeaths",
+                             "TotalConfirmed")
+    return ratio_df.sort(col("DeathsRate").desc()).limit(country_count)  
+
+def get_countries_less_recover_rate(country_count=5):
+    ndf = get_countries_info()
+    df = ndf.filter(ndf.TotalConfirmed>0) 
+    new_df = df.withColumn("RecoverRate", df.TotalRecovered / df.TotalConfirmed)
+    ratio_df = new_df.select("Country", "RecoverRate", "TotalRecovered",
+                             "TotalConfirmed")
+    return ratio_df.sort(col("RecoverRate").asc()).limit(country_count)  
+
+def get_countries_less_deaths_rate(country_count=5):
+    ndf = get_countries_info()
+    df = ndf.filter(ndf.TotalConfirmed>0) 
+    new_df = df.withColumn("DeathsRate", df.TotalDeaths / df.TotalConfirmed)
+    ratio_df = new_df.select("Country", "DeathsRate", "TotalDeaths",
+                             "TotalConfirmed")
+    return ratio_df.sort(col("DeathsRate").asc()).limit(country_count)  
 
 def get_country_status(country):
     api = "dayone/country/{}".format(country)
