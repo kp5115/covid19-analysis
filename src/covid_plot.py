@@ -61,6 +61,38 @@ def plot_top_countries_totalrecovered(country_count=5):
     print("Plot")
     pdf.plot(kind='bar',x='Country',y='TotalRecovered')
 
+def plot_top_countries_recover_rate(country_count=5):
+    df = covid_data.get_top_countries_recover_rate(country_count)
+    pdf = df.toPandas()
+    print("Table")
+    print(pdf.tail(country_count))
+    print("Plot")
+    pdf.plot(kind='bar',x='Country',y='RecoverRate')
+
+def plot_top_countries_deaths_rate(country_count=5):
+    df = covid_data.get_top_countries_deaths_rate(country_count)
+    pdf = df.toPandas()
+    print("Table")
+    print(pdf.tail(country_count))
+    print("Plot")
+    pdf.plot(kind='bar',x='Country',y='DeathsRate')
+
+def plot_countries_less_recover_rate(country_count=5):
+    df = covid_data.get_countries_less_recover_rate(country_count)
+    pdf = df.toPandas()
+    print("Table")
+    print(pdf.tail(country_count))
+    print("Plot")
+    pdf.plot(kind='bar',x='Country',y='RecoverRate')
+
+def plot_top_countries_less_deaths_rate(country_count=5):
+    df = covid_data.get_countries_less_deaths_rate(country_count)
+    pdf = df.toPandas()
+    print("Table")
+    print(pdf.tail(country_count))
+    print("Plot")
+    pdf.plot(kind='bar',x='Country',y='DeathsRate')
+
 def print_world_status_timebased(start_time, end_time):
     """Prints world status data"""
     df = covid_data.get_world_status_timebased(start_time, end_time)
