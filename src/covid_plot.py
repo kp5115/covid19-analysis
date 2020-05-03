@@ -1,6 +1,6 @@
 """Modules for plotting graph."""
 
-from pyspark.sql.functions import col
+from pyspark.sql.functions import explode, col, split
 
 import covid_data
 
@@ -45,12 +45,21 @@ def plot_world_status():
     print("Plot")
     lines = pdf.plot()
 
-def plot_all_countries_status():
-    df = covid_data.get_countries_info()
-    new_df = df.select("Countries")
-    df.printSchema()
-    new_df.orderBy("TotalRecovered", ascending=False).show(10)
-    new_df.orderBy("TotalRecovered").show(10)
+def plot_top_countries_totalconfirmed(country_count=5):
+    df = covid_data.get_top_countries_totalconfirmed(country_count)
+    pdf = df.toPandas()
+    print("Table")
+    print(pdf.tail(country_count))
+    print("Plot")
+    pdf.plot(kind='bar',x='Country',y='TotalConfirmed')
+
+def plot_top_countries_totalrecovered(country_count=5):
+    df = covid_data.get_top_countries_totalrecovered(country_count)
+    pdf = df.toPandas()
+    print("Table")
+    print(pdf.tail(country_count))
+    print("Plot")
+    pdf.plot(kind='bar',x='Country',y='TotalRecovered')
 
 def print_world_status_timebased(start_time, end_time):
     """Prints world status data"""

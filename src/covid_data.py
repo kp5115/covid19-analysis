@@ -7,6 +7,7 @@ import time
 import pyspark
 from pyspark import SparkContext
 from pyspark.sql.session import SparkSession
+from pyspark.sql.functions import explode, col, split
 
 SPARK_CONTEXT =SparkContext()
 SPARK_SESSION = SparkSession(SPARK_CONTEXT)
@@ -54,7 +55,23 @@ def get_global_info():
 
 def get_countries_info():
     data_frame = _get_data("summary")
-    return data_frame
+    new_df = data_frame.select(explode("Countries"))
+    country_df = new_df.select("col.Country","col.Date","col.NewConfirmed",
+                               "col.NewDeaths", "col.NewRecovered",
+                               "col.TotalConfirmed", "col.TotalDeaths",
+                               "col.TotalRecovered")
+    return country_df
+
+def get_top_countries_totalconfirmed(country_count=5):
+    df = get_countries_info()
+    #TODO: Looks like desc is not working. Check later
+    new_df = df.sort(col("TotalConfirmed").desc()).limit(country_count)
+    return new_df.select("Country", "TotalConfirmed")
+
+def get_top_countries_totalrecovered(country_count=5):
+    df = get_countries_info()
+    new_df = df.sort(col("TotalConfirmed").desc()).limit(country_count)
+    return new_df.select("Country", "TotalRecovered")
 
 def get_country_status(country):
     api = "dayone/country/{}".format(country)
